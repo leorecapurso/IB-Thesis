@@ -6,7 +6,7 @@ var experimentName = "2AFC IB Experiment - Mack and Rock, 4 Trials, Gray Backgro
 var PROLIFIC_URL = "https://app.prolific.co/submissions/complete?cc=48A0A32C";
 
 // Other behind-the-scenes variables (not likely to be changed)
-var path = "https://www.mn.perceptionresearch.org/IB_MackRock/E3";
+var path = "http://127.0.0.1:5000"; //locally hosted python flask server
 var iti = 200; //msec
 var currentTrial = 0;
 var startTrialTime;
