@@ -1,0 +1,197 @@
+---
+title: "Experiment 2 Analysis"
+author: "Makaela Nartker" 
+date: "October, 2023" 
+output: 
+  html_document:
+    theme: readable
+    toc: true
+---
+
+
+``` {r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### Import functions, packages, and data 
+
+
+```{r, message=FALSE, warning=FALSE}
+# Packages
+packages <- c("data.table", "Hmisc", "DescTools", "BayesFactor", "psycho", "ggplot2", "RColorBrewer", "wesanderson", "plotly", "dplyr", "knitr", "export", "ggrepel", "boostrap", "ggpubr")
+invisible(lapply(packages, require, character.only = TRUE))
+
+# Read in other functions
+source("functions.R")
+
+# Read data files 
+data <- fread("data.csv")
+info <- fread('info.csv')
+```
+
+
+### Data cleaning
+
+Pre-registered exclusion criteria specify that we drop any subject who: 
+
+(1) Provided incomplete data
+
+(2) Incorrectly answered the Ishihara color plate question
+
+(3) Incorrectly answered the "Which arm was longer?" question on Trial 1, 2, or 3 
+
+
+```{r}
+data$longerArm <- factor(data$longerArm, c("horizontal","null","vertical"))
+data$response_longerArm <- factor(data$response_longerArm, c("horizontal","null","vertical"))
+data$crossError <- ifelse(data$longerArm==data$response_longerArm, 0, 1)
+data_first_three <- subset(data, trialNum<3, drop=TRUE)
+exclusions1 <- unique(data_first_three$subjectIDCum[data_first_three$crossError==1])
+exclusions2 <- info$subjectIDCum[info$ishihara!=42 | is.na(info$ishihara)]
+exclusions3 <- info$subjectIDCum[duplicated(info$prolificPID)]
+subset_info <- subset(info, select=-comments)
+subset_info[subset_info==""] <- NA 
+exclusions4 <- subset_info[rowSums(is.na(subset_info)) > 0,]$subjectIDCum
+all_exclusions <- unique(sort(c(exclusions1, exclusions2, exclusions3, exclusions4)))
+
+# New data frames with only included subjects
+data_new <- data[ ! data$subjectIDCum %in% all_exclusions, ]
+info_new <- info[ ! info$subjectIDCum %in% all_exclusions, ]
+
+# Subset only IB trials and only trials where an IB stimulus was present 
+data_IB <- subset(data_new, trialNum==3)
+data_IB_present <- subset(data_IB, trialType=="IBstimulus_present")
+
+# Add a column indicating whether each subject was correct or incorrect on red/blue question 
+data_IB_present$redBlue <- ifelse(data_IB_present$response_AFC==data_IB_present$IBstimulus_color, "correct", "incorrect")
+
+# Uncomment below see analysis only for subjects who reported being fammiliar/unfamiliar with IB studies (present trials only)
+#cat("% of subjects who reported being familiar with IB = ", round(sum(info_new$IBfamiliar=="yes")/nrow(info_new)*100,3), "% \n")
+#familiarity_exclusions <- info_new$subjectID[info_new$IBfamiliar=="no"]
+#data_IB_present <- data_IB_present[ data_IB_present$subjectID %in% familiarity_exclusions, ] # unfamiliar
+#data_IB_present <- data_IB_present[ ! data_IB_present$subjectID %in% familiarity_exclusions, ] # familiar
+```
+
+
+### Traditional IB question 
+
+
+``` {r, results='asis'}
+cat("Number of Noticers = ", sum(data_IB_present$response_yesNo=="yes"), "\n")
+cat("Number of Non-Noticers = ", sum(data_IB_present$response_yesNo=="no"), "\n")
+cat("IB rate = ", round(sum(data_IB_present$response_yesNo=="no")/nrow(data_IB_present) * 100, 2), "% \n") 
+
+# False alarm rate (for trials where no IB stimulus was shown)
+cat("False alarm rate (saying, 'yes, I noticed' when no IB stimulus was shown) = ", round(sum(data_IB$trialType=="IBstimulus_absent" & data_IB$response_yesNo=="yes") / sum(data_IB$trialType=="IBstimulus_absent") * 100, 2), "% \n")
+```
+
+### Traditional IB question (SDT analysis)
+
+
+``` {r, results='asis'}
+hits <- sum(data_IB$trialType=="IBstimulus_present" & data_IB$response_yesNo=="yes")
+FAs <- sum(data_IB$trialType=="IBstimulus_absent" & data_IB$response_yesNo=="yes")
+misses <- sum(data_IB$trialType=="IBstimulus_present" & data_IB$response_yesNo=="no") 
+CRs <- sum(data_IB$trialType=="IBstimulus_absent" & data_IB$response_yesNo=="no") 
+nPresent <- sum(data_IB$trialType=="IBstimulus_present")
+nAbsent <- sum(data_IB$trialType=="IBstimulus_absent")
+hautus(hits, FAs, nPresent, nAbsent)
+
+# Calculate d-prime and criterion 
+cat("y/n d-prime =   ", qnorm(hit_rate) - qnorm(fa_rate), "\n") 
+cat("y/n criterion =   ", criterion(hit_rate, fa_rate), "\n") 
+cat("\n")
+estimate_variance(hit_rate, fa_rate, nPresent, nAbsent, alpha = .05)
+cat("Is d-prime = 0? (the null hypothesis) \n")
+sig_test(dPrime, se_dPrime, alpha = .05)
+cat("\n")
+cat("\n")
+estimate_variance_criterion(hit_rate, fa_rate, nPresent, nAbsent, alpha = .05);
+cat("Is criterion = 0? (the null hypothesis) \n")
+sig_test(criterion(hit_rate, fa_rate), se_criterion, alpha = .05)
+cat("\n")
+```
+
+
+### Percent noticing vs. percent correct on red/blue
+
+
+``` {r}
+# Present trials only since there is no "correct" answer for the red/blue question on absent trials 
+cat("Percent of subjects shown an IB stimulus who reported noticing = ", round(sum(data_IB_present$response_yesNo=="yes") / nrow(data_IB_present)*100,2), "% \n")
+cat("Percent of subjects shown an IB stimulus who chose the correct location = ", round(sum(data_IB_present$redBlue=="correct") / nrow(data_IB_present)*100,2), "% \n")
+```
+
+
+### Follow-up red/blue question (percent correct analysis)
+
+
+``` {r} 
+# Non-noticers (subjects who answered "no" to the traditional IB question)
+binom.test(sum(data_IB_present$response_yesNo=="no" & data_IB_present$redBlue=="correct"), sum(data_IB_present$response_yesNo=="no"), p = 0.5)
+proportionBF(sum(data_IB_present$response_yesNo=="no" & data_IB_present$redBlue=="correct"), sum(data_IB_present$response_yesNo=="no"), p = 0.5)
+
+# Noticers (subjects who answered "yes" to the traditional IB question)
+binom.test(sum(data_IB_present$response_yesNo=="yes" & data_IB_present$redBlue=="correct"), sum(data_IB_present$response_yesNo=="yes"), p = 0.5)
+proportionBF(sum(data_IB_present$response_yesNo=="yes" & data_IB_present$redBlue=="correct"), sum(data_IB_present$response_yesNo=="yes"), p = 0.5)
+```
+
+
+### Follow-up red/blue question (percent correct analysis)
+
+
+``` {r, message=FALSE}
+pctCorrect <- data.frame("Response" = c("No", "Yes"),
+                   "Pct_correct" = c(rep(0,2)), 
+                   "Lower_CI" = c(rep(0,2)), 
+                   "Upper_CI" = c(rep(0,2)))
+
+yn <- c("no", "yes")
+
+for (i in 1:length(yn)) {
+  correct <- sum(data_IB_present$response_yesNo==yn[i] & data_IB_present$redBlue=="correct")
+  nPresent <- sum(data_IB_present$response_yesNo==yn[i])
+  pctCorrect$Pct_correct[i] <- round((correct / nPresent)*100,3)
+  stat <- binom.test(correct, nPresent, p = 0.5)
+  pctCorrect$Lower_CI[i] <- round(stat$conf.int[1]*100,3)
+  pctCorrect$Upper_CI[i] <- round(stat$conf.int[2]*100,3)
+  pctCorrect$P_value[i] <-  round(stat$p.value,3)
+  pctCorrect$Sig[i] <- ifelse(stat$p.value >= .05, "n.s.", ifelse(stat$p.value < .001, "***", ifelse(stat$p.value <.01, "**", ifelse(stat$p.value <.05, "*"))))
+}
+
+rmarkdown::paged_table(pctCorrect)
+```
+
+### Follow-up red/blue question (SDT analysis)
+
+
+``` {r}
+dPrimes <- data.frame("Response" = c("No", "Yes"),
+                      "Hit_rate" = c(rep(0,2)), 
+                      "FA_rate" = c(rep(0,2)),
+                      "D_prime" = c(rep(0,2)), 
+                      "Lower_CI" = c(rep(0,2)), 
+                      "Upper_CI" = c(rep(0,2)))
+
+yn <- c("no", "yes")
+
+for (i in 1:length(yn)) {
+  hits <- sum(data_IB$IBstimulus_color=="red" & data_IB$response_AFC=="red" & data_IB$response_yesNo==yn[i])
+  FAs <- sum(data_IB$IBstimulus_color=="blue" & data_IB$response_AFC=="red" & data_IB$response_yesNo==yn[i])
+  nPresent <- sum(data_IB$IBstimulus_color=="red" & data_IB$response_yesNo==yn[i])
+  nAbsent <- sum(data_IB$IBstimulus_color=="blue" & data_IB$response_yesNo==yn[i])
+  hautus(hits, FAs, nPresent, nAbsent)
+  dPrimes$Hit_rate[i] <- round(hit_rate,3)
+  dPrimes$FA_rate[i] <- round(fa_rate,3)
+  
+  s <<- estimate_variance(hit_rate, fa_rate, nPresent, nAbsent, alpha = .05)
+  dPrimes$D_prime[i] <- round(dPrime,3)
+  dPrimes$Upper_CI[i] <- round(s$upper_CI_dPrime,3)
+  dPrimes$Lower_CI[i] <- round(s$lower_CI_dPrime,3)
+  dPrimes$P_value[i] <- round(exp(-0.717*(dPrime/se_dPrime) - 0.416*(dPrime/se_dPrime)^2),3)
+  dPrimes$Sig[i] <- ifelse(dPrimes$P_value[i] >= .05, "n.s.", ifelse(dPrimes$P_value[i] < .001, "***", ifelse(dPrimes$P_value[i]<.01, "**", ifelse(dPrimes$P_value[i] <.05, "*"))))
+}
+
+rmarkdown::paged_table(dPrimes)
+```

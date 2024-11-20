@@ -1,0 +1,50 @@
+
+“unpack.ipynb” is a Jupyter notebook file that will take the .txt files from each subject and create two .csv files: 
+	1.	“data.csv” contains the variables that define the condition each subject was in and their responses
+	2.	“info.csv” contains other information (e.g., about the experiment, subjects’ internet browser, etc.) 
+
+
+“data.csv”
+	⁃	batchNum: Given the large sample size, data were collected in batches; "1" indicates that a row of data was collected in Batch 1
+	⁃	subjectIDCum: Unique identifier for each subject in the experiment, assigned when data are collated with “unpack.ipynb” 
+	⁃	subjectID: Unique identifier for each subject within a batch 
+	⁃	trialNum: The number of the trial for a given row of data (total number of trials for this experiment was 4) 
+	⁃	longerArm: Specifies which arm of the cross presented on each trial was actually longer
+	⁃	response_longerArm: Subject's response to which arm of the cross was longer question
+	⁃	response_yesNo: Subject's response to traditional IB question (“null” except for Trial 4 - the critical IB trial)
+	⁃	response_AFC: Subject's response on the follow-up red/blue question (a forced-response in this case, not a true 2AFC) 
+	⁃	AFCquestion: The follow-up question a subject was asked on each trial 
+	⁃	RT_longerArm: Subject's response time on the cross arm question for that trial 
+	⁃	RT_yesNo: Subject's response time on the traditional IB question 
+	⁃	RT_AFC: Subject's response time on the follow-up red/blue question 
+	⁃	RT_IBfamiliarity: Subject's response time on the IB familiarity question 
+	⁃	RT_age: Subject's response time on the question asking them to self-report their age
+	⁃	RT_ishihara: Subject's response time on the Ishihara color plate question 
+	⁃	aboveBelow: Specifies whether the cross stimulus shown to the subject on each trial was above or below fixation
+	⁃	trialType: Specifies whether an IB stimulus was present or absent on each trial ("absent" except for some subjects on Trial 4)
+	⁃	IBstimulus_color: Specifies the color of the IB stimulus when present 
+	⁃	IBstimulus_location: Specifies the location of the IB stimulus when present 
+	⁃	trialTime: The time it took for subjects to complete each trial in the experiment  
+
+
+“info.csv”
+	⁃	batchNum: Given the large sample size, data were collected in batches; "1" indicates that a row of data was collected in Batch 1
+	⁃	subjectIDCum: Unique identifier for each subject in the experiment, assigned when data are collated with “unpack.ipynb”
+	⁃	subjectID: Unique identifier for each subject within a batch 
+	⁃	IBfamiliarity: Subject's response to a yes/no question about their familiarity with IB experiments
+	⁃	age: Subject’s age
+	⁃	ishihara: Subject's response to the Ishihara color plate question 
+	⁃	experimentName: Internal name for the experiment 
+	⁃	path: URL for the experiment (may be defunct) 
+	⁃	browserName: Subject's internet browser
+	⁃	browserInfo: Subject's internet browser version 
+	⁃	displayWindowHeight: The height of each subject's display window 
+	⁃	displayWindowWidth: The width of each subject's display window
+	⁃	displayScreenHeight: The height of each subject's screen 
+	⁃	displayScreenWidth: The width of each subject's screen 
+	⁃	totalTime: The time it took each subject to complete the experiment 
+	⁃	date: The date that each subject's data were collected 
+	⁃	comments: Comments left optionally by subjects at the end of the experiment 
+	⁃	prolificPID: Unique identifier given to each Prolific subject by Prolific 
+	⁃	studyID: Unique identifier given to each study run on Prolific by Prolific 
+	⁃	sessionID: Unique identifier given to each subject for each Prolific session 

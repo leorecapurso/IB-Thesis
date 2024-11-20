@@ -1,0 +1,268 @@
+*:focus {
+    outline: 0;
+    outline: none;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 13pt;
+    background-color: rgb(190, 190, 190);
+    color: black;
+    margin: auto;
+    zoom: 1.1;
+    -moz-transform: scale(1.1);
+    -moz-transform-origin: 0 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.instruct {
+    font-family: Arial, sans-serif;
+    color: black;
+    font-size: 14pt;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+#endInstructions {
+    display: none;
+}
+
+#prolific_link {
+    margin-top: 20px;
+    margin-left: 275px;
+}
+
+#container {
+    position: relative;
+    display: none;
+    margin: 0 auto;
+    background: gray;
+    color: black;
+    border: 3px solid black;
+    text-align: center;
+    width: 600px;
+    height: 600px;
+    margin-top: 85px;
+}
+
+#containerContent {
+    font-family: Arial, sans-serif;
+    height: 600px;
+    width: 600px;
+}
+
+#title {
+    font-size: 24pt;
+    text-align: center;
+    margin: 0 auto;
+}
+
+#age {
+    display: none;
+}
+
+#startButton {
+    display: table;
+    vertical-align: center;
+    color: black;
+    font-size: 14pt;
+    border: 3px outset gray;
+    background-color: #CCCCCC;
+    padding: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#continueButton {
+    display: none;
+    background: rgb(245, 245, 245);
+    padding: 5px 10px;
+    border: 3px outset gray;
+    color: black;
+    text-decoration: none;
+    display: table;
+    margin: 0 auto;
+    font-size: 10pt;
+    margin-top: 30px;
+    font-weight: bold;
+}
+
+#startButton:hover,
+#continueButton:hover {
+    border: 3px inset gray;
+}
+
+#startButton:active,
+#continueButton:active {
+    border: 3px inset gray;
+    background: gray;
+}
+
+.progress {
+    text-align: center;
+    display: none;
+    height: 15px;
+}
+
+#progressText {
+    font-size: 14pt;
+    color: black;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 60px;
+}
+
+#progressOutline {
+    background: white;
+    border: 3px solid black;
+    width: 100px;
+    margin: 5 auto;
+}
+
+#progressBar {
+    background: gray;
+    width: 0px;
+}
+
+#previewMode p {
+    margin-top: 100px;
+}
+
+#previewMode {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 1000px;
+    text-align: center;
+    font-size: 54pt;
+    background: gray;
+    opacity: 0.60;
+}
+
+#doneText {
+    color: black;
+    display: none;
+    max-width: 500px;
+    text-align: center;
+    margin: 10 auto;
+    padding-bottom: 10px;
+    font-size: 14pt
+}
+
+#doneText p {
+    font-size: 12pt;
+}
+
+#passwordText {
+    color: black;
+    display: none;
+    max-width: 500px;
+    text-align: center;
+    margin: 10 auto;
+    padding-bottom: 10px;
+    font-size: 24pt
+}
+
+#passwordText p {
+    font-size: 14pt;
+}
+
+#commentBox {
+    display: none;
+}
+
+#submitButton {
+    display: block;
+    margin: 0 auto;
+    margin-top: 500px;
+    margin-bottom: 50px;
+}
+
+#containerContent {
+    display: none;
+}
+
+#fixation {
+    display: none;
+    position: absolute;
+    left: 300px;
+    top: 280px;
+}
+
+.cross {
+    display: none;
+    margin-left: 20px;
+    margin-top: 190px;
+}
+
+#IBstimulus {
+    display: block;
+    margin: 0 auto;
+    margin-top: -200px;
+}
+
+#preview {
+    display: table;
+    margin: 0 auto;
+    width: 600px;
+    height: 600px;
+    margin-top: 10px;
+}
+
+#question1,
+#question2 {
+    font-family: Arial, sans-serif;
+    width: 85%;
+    margin: 0 auto;
+}
+
+.opt {
+    margin-top: 20px;
+}
+
+#option1 {
+    margin-left: 0px;
+}
+
+#option3,
+#option4 {
+    display: none;
+}
+
+#pleaseFixate {
+    display: none;
+    position: relative;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+input[type=radio] {
+    display: none;
+    margin-right: 10px;
+    margin-left: 50px;
+}
+
+#Ishihara {
+    display: none;
+    position: absolute;
+    left: 125px;
+    top: 200px;
+    width: 350px;
+    height: 350px;
+}
+
+#textbox {
+    width: 50px;
+    height: 40px;
+    font-size: 18pt;
+    display: inline;
+    text-align: center;
+    background: black;
+    border: 2px solid lightgray;
+    resize: none;
+    color: red;
+}

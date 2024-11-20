@@ -1,0 +1,119 @@
+<!-- Makaela Nartker 1/3/21 -->
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Visual perception study</title>
+    <link rel="shortcut icon" href="#" />
+</head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="https://chazfirestone.org/mturk/seedrandom.js"></script>
+<script src="https://chazfirestone.org/mturk/math.js"></script>
+<script src="https://chazfirestone.org/mturk/mturkfunctions.js"></script>
+<script src="main.js"></script>
+<link rel="stylesheet" href="style.css">
+
+<body>
+
+    <div id="experiment">
+        <div id="instructions" class="instruct">
+            <p id="title"><strong><br>Visual perception study</strong></p>
+
+            <p style="font-size:32pt"></p>This is a study about visual perception. We are going to show you some displays, and ask you questions about what you see.
+
+            <p style="font-size:24pt"></p>Your responses will only be useful if you do your best throughout the survey. Please don't multitask. The entire survey should take less than 3 minutes, so please stay focused on only this.
+
+            <p style="font-size:24pt"></p>You will see a circle in the center of a black box. <strong>When the circle is on the screen, please make sure to keep your eyes on that circle</strong>. On each trial, a large cross (+) will briefly appear above or below that circle. Your job is to report <strong>which arm of the cross is <em>longer</em> (vertical or horizontal)</strong>.
+
+            <p style="font-size:24pt"></p>Here is an example: 
+
+            <img id="preview" src="preview.png" style="margin-top:32px; margin-bottom:20px;">
+            
+            <p style="font-size:24pt"></p>In this example, you would respond that the <strong>horizontal</strong> arm is longer. 
+
+            <p style="font-size:24pt"></p>If you would like to participate in the survey, please press 'Start Experiment' to begin.
+            
+            <p style="font-size:24pt"></p><em>By completing this survey, you are consenting to be in this research study. Your participation is voluntary and you can stop at any time.</em>
+        </div>
+        
+        <!--  buttons  -->
+        <a href='javascript:StartExperiment()' id='startButton'>Start Experiment</a>
+
+        <!--  experiment trials  -->
+        <div id="container" align="center">
+            <div id="containerContent">
+
+                <!-- We draw a fixation X below, and show these instructions to subjects at the beginning of each trial-->
+                <div id="pleaseFixate">
+                    <p style="font-size:16pt;"></p>Please look at the circle. Try not to move your eyes. Press SPACE to begin.
+                </div>
+                
+                <!-- The cross for the primary task (presented pseudorandomly above or below fixation); longer arm is decided pseudorandomly by JS script -->
+                
+                <!-- If the horizontal arm is longer -->
+                <svg id="cross1" class="cross" height="200" width="200">
+                    <!-- the horizontal -->
+                    <line x1="100" y1="0" x2="100" y2="200" style="stroke:black;stroke-width:3" />
+                    <!-- the vertical -->
+                    <line x1="30" y1="100" x2="170" y2="100" style="stroke:black;stroke-width:3" />
+                </svg>
+
+                <!-- If the vertical arm is longer -->
+                <svg id="cross2" class="cross" height="200" width="200">
+                    <!-- the horizontal -->
+                    <line x1="100" y1="30" x2="100" y2="170" style="stroke:black;stroke-width:3" />
+                    <!-- the vertical -->
+                    <line x1="0" y1="100" x2="200" y2="100" style="stroke:black;stroke-width:3" />
+                </svg>
+
+                <!-- fixation -->
+                <svg id="fixation"><circle cx="10" cy="10" r="7" stroke="black" stroke-width="2" fill="none"/></svg>
+                
+                                        
+            <!-- The IB stimulus, just makes an SVG container the size of the experiment box; then we can draw the IB stimulus anywhere in that box using JS -->
+            <svg id="IBstimulus" height="600" width="600"></svg>
+
+            </div>
+
+            <!-- 2AFC questions and radio buttons; question text and labels are swapped out in JS -->
+            <div id="2AFC">
+                <div id="question1"></div>
+                <input type="radio" id="option1" name="options" class="opt"><label for="option1"></label>
+                <input type="radio" id="option2" name="options" class="opt"><label for="option2"></label>
+            </div>
+            
+            <!-- For questions that require typing input; limit to max of 2 characters to avoid throwing out data from subjects who accidentally hit an extra key (age and Ishihara answers should be 2 digits) -->
+            <div id="pleaseType">
+                <div id="question2"></div>
+                <textarea id="textBox" input type="number" maxlength=2 pattern="\d{2}" form="usrform" onkeyup="javascript:ShowButton()"></textarea>
+            </div>
+            
+            <!-- Clicking 'continue' saves responses, or does nothing if a response has not been made --> 
+            <a href="javascript:SaveResponse()" id="continueButton">Continue</a>
+            
+            <!-- Colorblindness test --> 
+            <img id="Ishihara" src="ishihara.jpg">
+
+        </div>
+
+    </div> <!-- experiment -->
+
+    <!-- End of experiment comment box -->
+    <div id="doneText">
+        <strong>Done - thank you! Please free to leave any comments about the experiment in the box below.</strong>
+        <br />
+        <p>Click 'submit' to receive your password. (NOTE: You may need to scroll to the bottom of the page to see the button!) </p>
+        <textarea id="commentBox" rows=4 cols=40 placeholder="Enter your comments here..."></textarea>
+    </div>
+    
+    <!-- Instructions for end of experiment, clicking link sends subject back to Prolific -->
+    <p id="endInstructions" class="instruct" style="margin-top:60px;"></p>
+    <a id="prolific_link" class="instruct"></a>
+
+</body>
+
+<button id="submitButton" name="submitButton" onclick="javascript:DoneExperiment()">Withdraw</button>
+
+</html>
